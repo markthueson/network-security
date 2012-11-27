@@ -7,6 +7,7 @@
 #include "common/option_parser.h"
 
 #include <fstream>
+#include <set>
 
 class Attack_Handler : public Handler {
 public:
@@ -19,6 +20,7 @@ public:
 
 private:
 	std::string watch_list_name_;
+	std::set<string> *watch_list;
 
 	void load_watch_list();
 	bool on_watch_list(TCPPacket p);

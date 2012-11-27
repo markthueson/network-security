@@ -24,7 +24,7 @@ void Attack_Handler::parse_options(int argc, char* const argv[]){
 		{0, 0, 0, 0}
 	};
 
-	watch_list_name_ = "whitelist";
+	watch_list_name_ = "what_list";
 
 	OptionParser options;
 	options.parse(argc, argv, long_options);
@@ -59,9 +59,38 @@ void Attack_Handler::postrouting(IPPacket & p){
 
 void Attack_Handler::load_watch_list(){
 	DEBUG("Loading white list");
+	string line;
+
+	if(watch_list != NULL){
+		delete watch_list;
+	}
+	watch_list = new set<string>();
+
+	// open file
+	ifstream file(watch_list_name_.c_str());
+	if (!file.is_open()) {
+		cerr << "Can't open " << watch_list_name_ << endl;
+		return;
+	}
+
+	// parse file
+	while (!file.eof()) {
+		getline(file,line);
+		if ((line == "") || (line[0] == '#')) {
+			continue;
+		}
+		DEBUG("Inserting " << line << " into watch_list");
+		watch_list->insert(line);
+	}
 }
 
 bool Attack_Handler::on_watch_list(TCPPacket p){
+	for (set<string>::iterator it = watch_list->begin(); it != watch_list->end(); it++){
+		if(*it == p.get_ip_destination_address_s()){
+			return true;
+		}
+	}
+
 	return false;
 }
 
