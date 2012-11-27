@@ -1,4 +1,4 @@
-#include "wifu.h"
+#include "main.h"
 
 // global handler
 Handler* handler_;
@@ -251,8 +251,8 @@ void parse_options(int argc, char* const argv[]) {
     // default options
     verbose_ = false;
     flush_iptables_ = false;
-    interface_ = "wlan0";
-    config_file_ = "wifu.conf";
+    interface_ = "eth0";
+    config_file_ = "conf/attack.conf";
 
     // default handler
     handler_ = NULL;

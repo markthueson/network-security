@@ -4,9 +4,8 @@
 #include <string>
 
 #include "handler.h"
-#include "test/test_handler.h"
-#include "atp/atp.h"
 #include "tcp_atp/tcp_atp.h"
+#include "attack/attack_handler.h"
 
 // Returns an instance of a handler assiciated with the supplied name
 //

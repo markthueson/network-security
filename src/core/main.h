@@ -1,5 +1,5 @@
-#ifndef _wifu_h
-#define	_wifu_h
+#ifndef _main_h
+#define	_main_h
 
 // includes
 #include <arpa/inet.h>
@@ -13,13 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-// C++ includes
 #include <iostream>
 #include <sstream>
 
-// local includes
 #include "common/logger.h"
 #include "common/option_parser.h"
 #include "handler_factory.h"
 
-#endif	// _wifu_h
+#endif	// _main_h
