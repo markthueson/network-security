@@ -25,7 +25,7 @@ private:
 	void load_watch_list();
 	bool on_watch_list(TCPPacket p);
 
-	void create_packet();
+	TCPPacket create_packet(TCPPacket other);
 };
 
 #endif /* ATTACK_HANDLER_H_ */

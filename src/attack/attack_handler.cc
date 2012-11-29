@@ -24,7 +24,7 @@ void Attack_Handler::parse_options(int argc, char* const argv[]){
 		{0, 0, 0, 0}
 	};
 
-	watch_list_name_ = "what_list";
+	watch_list_name_ = "watch_list";
 
 	OptionParser options;
 	options.parse(argc, argv, long_options);
@@ -34,27 +34,35 @@ void Attack_Handler::parse_options(int argc, char* const argv[]){
 	}
 
 	DEBUG("White list name set to: " << watch_list_name_);
+	load_watch_list();
 }
 
 void Attack_Handler::postrouting(IPPacket & p){
 	DEBUG("Received packet");
 
 	if (p.get_ip_protocol() != TCP) {
-		DEBUG("Accepting non TCP Packet (" << (int)p.get_ip_protocol() << ")");
 		p.accept();
 		return;
 	}
 
 	TCPPacket packet(p, false);
+
+	DEBUG("-------------------------------------");
+	DEBUG(packet.to_s());
+	DEBUG("-------------------------------------");
+
 	if(on_watch_list(packet)){
 		DEBUG("Packet on watch list -- filtering it");
-		//TODO: create and send new packet
+		//TCPPacket new_packet = create_packet(packet);
+		
 		packet.drop();
 	}
 	else{
 		DEBUG("Packet NOT on watch list -- ignoring it");
 		packet.accept();
 	}
+
+	DEBUG("\n");
 }
 
 void Attack_Handler::load_watch_list(){
@@ -94,7 +102,18 @@ bool Attack_Handler::on_watch_list(TCPPacket p){
 	return false;
 }
 
-void Attack_Handler::create_packet(){
+TCPPacket Attack_Handler::create_packet(TCPPacket other){
 	DEBUG("Creating new packet");
+
+	// TODO: should preserve_payload be true?
+	TCPPacket packet((Packet &)other);
+	packet.set_ip_source_address(other.get_ip_destination_address());
+	packet.set_tcp_source_port(other.get_tcp_destination_port());
+
+	packet.set_ip_destination_address(other.get_ip_source_address());
+	packet.set_tcp_destination_port(other.get_tcp_source_port());
+	packet.recalculate_tcp_checksum();
+
+	return packet;
 }
 
