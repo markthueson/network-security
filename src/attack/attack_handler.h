@@ -16,7 +16,7 @@ public:
 
 	virtual void parse_options(int argc, char* const argv[]);
 
-	void postrouting(IPPacket & p);
+	virtual void prerouting(IPPacket& p);
 
 private:
 	std::string watch_list_name_;
@@ -24,8 +24,9 @@ private:
 
 	void load_watch_list();
 	bool on_watch_list(TCPPacket p);
+	bool is_http_response(TCPPacket p);
 
-	TCPPacket create_packet(TCPPacket other);
+	TCPPacket create_packet(TCPPacket & other, TCPPacket & out);
 };
 
 #endif /* ATTACK_HANDLER_H_ */
