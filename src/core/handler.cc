@@ -10,28 +10,27 @@ void Handler::parse_options(int argc, char* const argv[]) {
 }
 
 void Handler::input(IPPacket& p) {
-    cout << "Handler::input" << endl;
+    //cout << "Handler::input" << endl;
     p.accept();
 }
 
 void Handler::output(IPPacket& p) {
-    cout << "Handler::output" << endl;
+    //cout << "Handler::output" << endl;
     p.accept();
 }
 
 void Handler::forward(IPPacket& p) {
-    cout << "Handler::forward" << endl;
+    //cout << "Handler::forward" << endl;
     p.accept();
 }
 
 void Handler::prerouting(IPPacket& p) {
-    cout << "Handler::prerouting" << endl;
+    //cout << "Handler::prerouting" << endl;
     p.accept();
 }
 
 void Handler::postrouting(IPPacket& p) {
-    cout << "Handler::postrouting" << endl;
-    cout << p.to_s() << endl;
+    //cout << "Handler::postrouting" << endl;
     p.accept();
 }
 

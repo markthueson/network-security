@@ -16,7 +16,7 @@ public:
 
 	virtual void parse_options(int argc, char* const argv[]);
 
-	virtual void prerouting(IPPacket& p);
+	virtual void input(IPPacket& p);
 
 private:
 	std::string watch_list_name_;
