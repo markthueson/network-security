@@ -1,4 +1,5 @@
 #include "ippacket.h"
+#include <iostream>
 
 // the IP header has the following fields:
 //
@@ -82,6 +83,7 @@ u_int16_t IPPacket::get_ip_datagram_length() {
 }
 
 void IPPacket::set_ip_datagram_length(u_int16_t length) {
+    cout << "SETTING SIZE!" << endl;
     ip_->tot_len = htons(length);
 }
 

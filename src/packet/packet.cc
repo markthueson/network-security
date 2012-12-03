@@ -44,6 +44,10 @@ int Packet::get_payload_length() {
     return payload_length_;
 }
 
+void Packet::set_payload_length(int length) {
+    payload_length_ = length;
+}
+
 Filter Packet::get_filter() {
     return filter_;
 }

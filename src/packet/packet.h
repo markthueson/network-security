@@ -65,6 +65,8 @@ public:
     // Gets the length of the internal payload buffer
     int get_payload_length();
 
+    void set_payload_length(int length);
+
     // Gets the filter type of this Packet
     Filter get_filter();
 
