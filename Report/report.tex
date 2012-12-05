@@ -51,23 +51,11 @@ robert.christensen@gmail.com, philiplundrigan@gmail.com, m\_thueson@hotmail.com}
 \maketitle
 
 \begin{abstract}
-  Your abstract should concisely answer the following three questions: 1) what problem are you addressing? 2) what approach are you taking to solve the problem? 3) what are your results?
-  
-  Place the abstract at the beginning of the first column 3$''$ from the
-top of the page, unless that does not leave enough room for the title
-and author information. Use a slightly smaller width than in the body
-of the paper. Head the abstract with ``Abstract'' centered above the
-body of the abstract in a 12-point bold font. The body of the abstract
-should be in the same font as the body of the paper.
-
-The abstract should be a concise, one-paragraph summary describing the
-general thesis and conclusion of your paper. A reader should be able
-to learn the purpose of the paper and the reason for its importance
-from the abstract. The abstract should be no more than 200 words long.
+Your abstract should concisely answer the following three questions: 1) what problem are you addressing? 2) what approach are you taking to solve the problem? 3) what are your results?
 \end{abstract}
 
 \section{Introduction}
-Many people when attempting to connect to a secure website, such as a banking website, simply enter the well-known web address such as www.chase.com. Users often assume the a connection will be established with the desired host.  If applicable, especially for banking sites, the user will assume the connection established between the web browser and server will be secured.  However, the web assumes unsecure connections such as http and will establish a secure https connection only when a special request is made.  When the well known web address www.chase.com is requested, the web server will request the IP address of the chase.com server over DNS.  When the correct IP server address is known to the client, the client will request the web page at http://www.chase.com.  In order to migrate the user to a secure, encrypted version of the website, a redirect message is returned from the server to point the client the secure website https://www.chase.com.  This inherent redirect is subject to a number of different attacks; however this work focuses on the possibility of intercepting the redirect packet and instead servicing the initial http request with a mock site.  We will show that an adversary can setup a public access point and perform such an attack.  If more time were given various solutions would also be explored that would mitigate the possibility of such attacks.
+Many people when attempting to connect to a secure website, such as a banking website, simply enter the well-known web address such as {\em www.chase.com}. Users often assume the a connection will be established with the desired host.  If applicable, especially for banking sites, the user will assume the connection established between the web browser and server will be secured.  However, the web assumes unsecure connections such as http and will establish a secure https connection only when a special request is made (see figure \ref{fg:redirect}).  When the well known web address {\em www.chase.com} is requested, the web server will request the IP address of the {\em chase.com} server over DNS.  When the correct IP server address is known to the client, the client will request the web page at {\em http://www.chase.com}.  In order to migrate the user to a secure, encrypted version of the website, a redirect message is returned from the server to point the client the secure website {\em https://www.chase.com}.  This inherent redirect is subject to a number of different attacks; however this work focuses on the possibility of intercepting the redirect packet and instead servicing the initial http request with a mock site \cite{offpath} (see figure \ref{fg:attack}).  We will show that an adversary can setup a public access point and perform such an attack.  If more time were given various solutions would also be explored that would mitigate the possibility of such attacks.
 
 
 \section{Related Work}
@@ -115,18 +103,15 @@ Ideally there would be a way to make it the networks responsibility so it could 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Implementation / Experimentation}
-For our experiments, we wanted to see how feasible it is to implement a HTTP redirect attack in a real computer system. To do this we used two libraries: \texttt{netfilter}\cite{netfilter} and \texttt{netfilter\_queue}\cite{netfilterQueue}. These two libraries, along with modifying the IP tables of the linux kernel, allowed us to receive packets and bring the packets from the kernel into user space. We also used part of the \texttt{wifu}\cite{wifu} framework to handle system callbacks when a packet arrives. By bringing the packet into user space, we were then able to write a program that filters a packet based on its IP address. 
+For our experiments, we wanted to see how feasible it is to implement a HTTP redirect attack in a real computer system. To do this we used two libraries: \texttt{netfilter} \cite{netfilter} and \texttt{netfilter\_queue}\ cite{netfilterQueue}. These two libraries, along with modifying the IP tables of the linux kernel, allowed us to receive packets and bring them from the kernel into user space. We also used part of the \texttt{wifu}\cite{wifu} framework to handle system callbacks when a packet arrives. By bringing the packet into user space, we were then able to write a program that filters a packet based on its IP address. 
 
-To implement this attack, a "watch list" is kept to decide which IP addresses should be monitored. When a packet is received with an IP address that is on the "watch list" and it is a \texttt{HTTP 301 Moved Permanently} response, we change the packet payload to a pre-made phishing website. This can be done by locating the beginning of the TCP packet payload and overriding its contents with our own data. We know that the current payload will be relatively small since the packet is a HTTP redirect response. The packet's payload size must also be adjusted to account for the larger size of the payload. Lastly, the TCP and IP checksum must be recalculated so that the transport layer will be able to validate the packet.
+To implement this attack, a "watch list" is kept to decide which IP addresses should be monitored. When a packet is received with an IP address that is on the "watch list" and it is a \texttt{HTTP 301 Moved Permanently} response, we change the packet payload to a pre-made phishing website. This can be done by locating the beginning of the TCP packet payload and overriding its contents with our own data. There are a few considerations that must be made for this attack to work. First, we know that the current payload will be relatively small since the packet is a HTTP redirect response. The packet's payload size must be adjusted to account for the larger size of the payload. Second, the TCP and IP checksum must be recalculated so that the transport layer will be able to validate the packet.
 
-From this experience of building this attack we learned although this attack is relatively straightforward, it was much harder to implement on a real system (though this could be due to our lack of experience). It took a lot of time and effort just to set up an environment where we could use \texttt{netfilter} and \texttt{netfilter\_queue} so that we could look at the packets. Once we had accomplished this, we still had many other problems to face. One thing we did not originally account for was that large websites have multiple IP addresses so a packet might not come from the same location between sessions. To solve this problem we used a "watch list" as mentioned above to list out all the IP address it should monitor.
+From this experience of building this attack we learned that although this attack is relatively straightforward, it was much harder to implement on a real system (though this could be due to our lack of experience). It took a lot of time and effort just to set up an environment where we could use \texttt{netfilter} and \texttt{netfilter\_queue} so that we could look at the packets. Once we had accomplished this, we still had many other problems to face. One thing we did not originally account for was that large websites have multiple IP addresses so a packet might not come from the same location between sessions. To solve this problem we used a "watch list", as mentioned above, to list out all the IP address it should monitor. Another problem we faced was when to block responses from the server. Originally we tried to block all communication between the client and server but quickly realized that the TCP connection needed to be made for this attack to work. To fix this problem we add the functionality to detect if the packet is a HTTP response by looking at the packet's payload. Only if the packet is a HTTP 301 response do we modify the packet.
 
-browser caches https redirects
+The source code for this application can be viewed at {\em https://github.com/markthueson/network-security}.
+
 \section{Conclusion}
-
-\section{Temp}
-
-reference to original idea\cite{offpath}
 
 % Here is a reference to different bib formats:
 %	http://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
@@ -134,4 +119,6 @@ reference to original idea\cite{offpath}
 \bibliography{ref}
 
 \end{document}
+
+
 
