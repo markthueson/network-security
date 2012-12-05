@@ -106,9 +106,13 @@ This attack is demonstrated as a type of Man In The Middle attack.  An adversary
 We were unable to implement any solution to this problem but thought of a few ways one would go about implementing one.
 One idea is to build a table into browsers that contains lists of sites that should always resolve using the https version instead of http.  This list could be maintained through browser updates and other methods but may end up causing too much upkeep overhead or become unsynchronized with the actual state of the internet.
 
+Any site that uses one time passwords can easily be protected against these types of attacks.  If a client is attempting to connect via an untrusted access point they can be issued a one time password via a secondary trusted authority that is registered to their account such as a cell phone.  This prevents the client from ever entering in their long term password and an adversary from aquiring any sensitive information.  While this does provide additional security it also makes authenticating harder on the user.  It also makes the assumption that such a secondary authority is available.
+
+Multiple stage authentication is an option that servers can provide to guard against these attacks as well.  To implement this the server would prompt the client for minimal information such as an account number or username.  The server can then issue challenges set by the client (such as personal questions) which allows the clien to to authenticate the server.  Only once these stages are complete would the server prompt for sensitive information such as a password.
+
 Some people purpose the idea that the redirect message should be exchanged for an error message that prompts the user to manually contact the server via the https address.  This may thwart many problems similar to the one in this paper but also creates a less user friendly method.
 
-Ideally there would be a way to make it the networks responsibility so it could be done without bothering either the client or the server.  
+Ideally there would be a way to make it the networks responsibility so it could be done without bothering either the client or the server.  In order for this to occur major changes to the current network would have to be made.  Implementing IPSec or transitioning to Content Centric Networking would actually solve all attacks of this nature.
 
 
 \section{Implementation / Experimentation}
