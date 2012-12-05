@@ -96,7 +96,7 @@ One idea is to build a table into browsers that contains lists of sites that sho
 
 Any site that uses one time passwords can easily be protected against these types of attacks.  If a client is attempting to connect via an untrusted access point they can be issued a one time password via a secondary trusted authority that is registered to their account such as a cell phone.  This prevents the client from ever entering in their long term password and an adversary from aquiring any sensitive information.  While this does provide additional security it also makes authenticating harder on the user.  It also makes the assumption that such a secondary authority is available.
 
-Multiple stage authentication is an option that servers can provide to guard against these attacks as well.  To implement this the server would prompt the client for minimal information such as an account number or username.  The server can then issue challenges set by the client (such as personal questions) which allows the clien to to authenticate the server.  Only once these stages are complete would the server prompt for sensitive information such as a password.
+Multiple stage authentication is an option that servers can provide to guard against these attacks as well.  To implement this the server would prompt the client for minimal information such as an account number or username.  The server can then issue challenges set by the client (such as personal questions) which allows the client to to authenticate the server.  Only once these stages are complete would the server prompt for sensitive information such as a password.
 
 Some people purpose the idea that the redirect message should be exchanged for an error message that prompts the user to manually contact the server via the https address.  This may thwart many problems similar to the one in this paper but also creates a less user friendly method.
 
@@ -106,7 +106,7 @@ Ideally there would be a way to make it the networks responsibility so it could 
 \begin{figure}[t]
 \begin{center}
 
-\includegraphics[width=3in]{redirect_attack.png} 
+\includegraphics[width=3.1in]{redirect_attack.png} 
 \caption{A HTTP Redirect attack} 
 \label{fg:attack}
 
@@ -115,14 +115,18 @@ Ideally there would be a way to make it the networks responsibility so it could 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Implementation / Experimentation}
+For our experiments, we wanted to see how feasible it is to implement a HTTP redirect attack in a real computer system. To do this we used two libraries: \texttt{netfilter}\cite{netfilter} and \texttt{netfilter\_queue}\cite{netfilterQueue}. These two libraries, along with modifying the IP tables of the linux kernel, allowed us to receive packets and bring the packets from the kernel into user space. We also used part of the \texttt{wifu}\cite{wifu} framework to handle system callbacks when a packet arrives. By bringing the packet into user space, we were then able to write a program that filters a packet based on its IP address. 
 
+To implement this attack, a "watch list" is kept to decide which IP addresses should be monitored. When a packet is received with an IP address that is on the "watch list" and it is a \texttt{HTTP 301 Moved Permanently} response, we change the packet payload to a pre-made phishing website. This can be done by locating the beginning of the TCP packet payload and overriding its contents with our own data. We know that the current payload will be relatively small since the packet is a HTTP redirect response. The packet's payload size must also be adjusted to account for the larger size of the payload. Lastly, the TCP and IP checksum must be recalculated so that the transport layer will be able to validate the packet.
+
+From this experience of building this attack we learned although this attack is relatively straightforward, it was much harder to implement on a real system (though this could be due to our lack of experience). It took a lot of time and effort just to set up an environment where we could use \texttt{netfilter} and \texttt{netfilter\_queue} so that we could look at the packets. Once we had accomplished this, we still had many other problems to face. One thing we did not originally account for was that large websites have multiple IP addresses so a packet might not come from the same location between sessions. To solve this problem we used a "watch list" as mentioned above to list out all the IP address it should monitor.
+
+browser caches https redirects
 \section{Conclusion}
 
 \section{Temp}
 
 reference to original idea\cite{offpath}
-
-reference to \texttt{netfilter}\cite{netfilter} and \texttt{netfilter\_queue}\cite{netfilterQueue}
 
 % Here is a reference to different bib formats:
 %	http://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
