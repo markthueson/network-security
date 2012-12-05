@@ -71,7 +71,7 @@ Many people when attempting to connect to a secure website, such as a banking we
 
 
 \section{Related Work}
-There are many works that can be found about phishing schemes that perform similar attacks.  Most of these use techniques such as ARP cache or DNS cache poisoning to allow all network traffic to be routed through them, the most notable of these is sslstrip.  These tools however are mostly focused on changing the redirect message to contain a homograph-similar site name (such as www.cha5e.com etc.).
+There are many works that can be found about phishing schemes that perform similar attacks.  Most of these use techniques such as ARP cache or DNS cache poisoning to allow all network traffic to be routed through them, the most notable of these is \texttt{sslstrip}\cite{sslstrip}.  These tools however are mostly focused on changing the redirect message to contain a homograph-similar site name (such as www.cha5e.com etc.).
 
 Other works discuss the correctness of even allowing an http redirect to point to an https citing security gaps such as the ones used by the aforementioned tools.
 
@@ -82,21 +82,9 @@ This attack is demonstrated as a type of Man In The Middle attack.  An adversary
 \begin{figure}[t]
 \begin{center}
 
-\includegraphics[width=2.5in]{normal_redirect.png} 
-\caption{insert something here} 
+\includegraphics[width=2.3in]{normal_redirect.png} 
+\caption{A typical HTTP redirect to switch from HTTP to HTTPS} 
 \label{fg:redirect}
-
-\end{center}
-\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%% Figure %%%%%%%%%%
-\begin{figure}[t]
-\begin{center}
-
-\includegraphics[width=3in]{redirect_attack.png} 
-\caption{insert something here} 
-\label{fg:attack}
 
 \end{center}
 \end{figure}
@@ -114,6 +102,17 @@ Some people purpose the idea that the redirect message should be exchanged for a
 
 Ideally there would be a way to make it the networks responsibility so it could be done without bothering either the client or the server.  In order for this to occur major changes to the current network would have to be made.  Implementing IPSec or transitioning to Content Centric Networking would actually solve all attacks of this nature.
 
+%%%%%%%%%% Figure %%%%%%%%%%
+\begin{figure}[t]
+\begin{center}
+
+\includegraphics[width=3in]{redirect_attack.png} 
+\caption{A HTTP Redirect attack} 
+\label{fg:attack}
+
+\end{center}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Implementation / Experimentation}
 
