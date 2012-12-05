@@ -10,6 +10,9 @@
 % The file ijcai09.sty is the style file for IJCAI-09 (same as ijcai07.sty).
 \usepackage{ijcai09}
 \usepackage{url}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{subfigure}
 
 % Use the postscript times font!
 \usepackage{times}
@@ -75,6 +78,29 @@ Other works discuss the correctness of even allowing an http redirect to point t
 \section{Adversary Model}
 This attack is demonstrated as a type of Man In The Middle attack.  An adversary can provide a public access point and allow anyone to connect to the internet via his connection.  Being the first hop in their connection all packets are available to sniff and alter as desired.  The adversary would use a filter to forward all normal traffic but would keep a listing of sites that it has doctored and replace all redirects to https versions of these sites with the doctored ones.  This would present the victim with a website that appears to be the normal https site they are used to but would actually only be a normal http site with the correct address that they initially typed (as opposed to a homograph-similar address).  Since many people are unaware of the difference between http and https the adversary would be able to acquire sensitive information from the victim such as usernames and passwords.
 
+%%%%%%%%%% Figure %%%%%%%%%%
+\begin{figure}[t]
+\begin{center}
+
+\includegraphics[width=2.5in]{normal_redirect.png} 
+\caption{insert something here} 
+\label{fg:redirect}
+
+\end{center}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%% Figure %%%%%%%%%%
+\begin{figure}[t]
+\begin{center}
+
+\includegraphics[width=3in]{redirect_attack.png} 
+\caption{insert something here} 
+\label{fg:attack}
+
+\end{center}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Methodology}
 We were unable to implement any solution to this problem but thought of a few ways one would go about implementing one.
