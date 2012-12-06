@@ -1,3 +1,5 @@
+
+
 %%%% ijcai09.tex
 
 \typeout{IJCAI-09 Instructions for Authors}
@@ -51,7 +53,16 @@ robert.christensen@gmail.com, philiplundrigan@gmail.com, m\_thueson@hotmail.com}
 \maketitle
 
 \begin{abstract}
-Your abstract should concisely answer the following three questions: 1) what problem are you addressing? 2) what approach are you taking to solve the problem? 3) what are your results?
+We analyze a security vulnerability of redirecting clients from non secure
+websites to secure websites.  A compromised person in the middle can easily
+sniff packets exchanged between a client and a server.  When a server sends
+redirects a client from an unsecured a man in the middle can replace this
+message with an illegitimate version of the site, potentially compromising
+the security of the clients security credentials.  The complexity of this
+attack is found to be very easy to deploy.  Several methods to patch
+this vulnerability are discussed.
+
+%Your abstract should concisely answer the following three questions: 1) what problem are you addressing? 2) what approach are you taking to solve the problem? 3) what are your results?
 \end{abstract}
 
 \section{Introduction}
@@ -82,7 +93,7 @@ This attack is demonstrated as a type of Man In The Middle attack.  An adversary
 We were unable to implement any solution to this problem but thought of a few ways one would go about implementing one.
 One idea is to build a table into browsers that contains lists of sites that should always resolve using the https version instead of http.  This list could be maintained through browser updates and other methods but may end up causing too much upkeep overhead or become unsynchronized with the actual state of the internet.
 
-Any site that uses one time passwords can easily be protected against these types of attacks.  If a client is attempting to connect via an untrusted access point they can be issued a one time password via a secondary trusted authority that is registered to their account such as a cell phone.  This prevents the client from ever entering in their long term password and an adversary from aquiring any sensitive information.  While this does provide additional security it also makes authenticating harder on the user.  It also makes the assumption that such a secondary authority is available.
+Any site that uses one time passwords can easily be protected against these types of attacks.  If a client is attempting to connect via an untrusted access point they can be issued a one time password via a secondary trusted authority that is registered to their account such as a cell phone.  This prevents the client from ever entering in their long term password and an adversary from acquiring any sensitive information.  While this does provide additional security it also makes authenticating harder on the user.  It also makes the assumption that such a secondary authority is available.
 
 Multiple stage authentication is an option that servers can provide to guard against these attacks as well.  To implement this the server would prompt the client for minimal information such as an account number or username.  The server can then issue challenges set by the client (such as personal questions) which allows the client to to authenticate the server.  Only once these stages are complete would the server prompt for sensitive information such as a password.
 
@@ -103,7 +114,7 @@ Ideally there would be a way to make it the networks responsibility so it could 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Implementation / Experimentation}
-For our experiments, we wanted to see how feasible it is to implement a HTTP redirect attack in a real computer system. To do this we used two libraries: \texttt{netfilter} \cite{netfilter} and \texttt{netfilter\_queue}\ cite{netfilterQueue}. These two libraries, along with modifying the IP tables of the linux kernel, allowed us to receive packets and bring them from the kernel into user space. We also used part of the \texttt{wifu}\cite{wifu} framework to handle system callbacks when a packet arrives. By bringing the packet into user space, we were then able to write a program that filters a packet based on its IP address. 
+For our experiments, we wanted to see how feasible it is to implement a HTTP redirect attack in a real computer system. To do this we used two libraries: \texttt{netfilter} \cite{netfilter} and \texttt{netfilter\_queue}\ cite{netfilterQueue}. These two libraries, along with modifying the IP tables of the Linux kernel, allowed us to receive packets and bring them from the kernel into user space. We also used part of the \texttt{wifu}\cite{wifu} framework to handle system callbacks when a packet arrives. By bringing the packet into user space, we were then able to write a program that filters a packet based on its IP address. 
 
 To implement this attack, a "watch list" is kept to decide which IP addresses should be monitored. When a packet is received with an IP address that is on the "watch list" and it is a \texttt{HTTP 301 Moved Permanently} response, we change the packet payload to a pre-made phishing website. This can be done by locating the beginning of the TCP packet payload and overriding its contents with our own data. There are a few considerations that must be made for this attack to work. First, we know that the current payload will be relatively small since the packet is a HTTP redirect response. The packet's payload size must be adjusted to account for the larger size of the payload. Second, the TCP and IP checksum must be recalculated so that the transport layer will be able to validate the packet.
 
@@ -112,7 +123,7 @@ From this experience of building this attack we learned that although this attac
 The source code for this application can be viewed at {\em https://github.com/markthueson/network-security}.
 
 \section{Conclusion}
-The attack that we have explored as well as other similar attacks are quite wide in scope and variety; however each of them relies on the lack of security in the transport layer.  Until that base issue is resolved by implementing a security method many phishing attacks will remain a possiblity.  Architectural solutions such as content centric networking ask too much of the backbone providers without enough insentive to perform the implementation.  Solutions such as one time passwords put more of a burden on the user making the experience more difficult or time consuming.  Other solutions such as implementing a browser database to track https sites simply have too much overhead.  Surely the best way to prevent such attacks is to educate the average user so they know what to look for when attempting to create secure connections; however this may be even less feasible many of the solutions proposed herein.
+The attack that we have explored as well as other similar attacks are quite wide in scope and variety; however each of them relies on the lack of security in the transport layer.  Until that base issue is resolved by implementing a security method many phishing attacks will remain a possibility.  Architectural solutions such as content centric networking ask too much of the backbone providers without enough incentive to perform the implementation.  Solutions such as one time passwords put more of a burden on the user making the experience more difficult or time consuming.  Other solutions such as implementing a browser database to track https sites simply have too much overhead.  Surely the best way to prevent such attacks is to educate the average user so they know what to look for when attempting to create secure connections; however this may be even less feasible many of the solutions proposed herein.
 
 % Here is a reference to different bib formats:
 %	http://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
