@@ -70,12 +70,14 @@ Many people when attempting to connect to a secure website, such as a banking we
 
 
 \section{Related Work}
-There are many works that can be found about phishing schemes that perform similar attacks.  Most of these use techniques such as ARP cache or DNS cache poisoning to allow all network traffic to be routed through them, the most notable of these is \texttt{sslstrip}\cite{sslstrip}.  These tools however are mostly focused on changing the redirect message to contain a homograph-similar site name (such as www.cha5e.com etc.).
+Many works that can be found about phishing schemes that perform similar attacks.  Most of these use techniques such as ARP cache or DNS cache poisoning to allow all network traffic to be routed through them, the most notable of these is \texttt{sslstrip}\cite{sslstrip}.  These tools however are mostly focused on changing the redirect message to contain a homograph-similar site name (such as {\em www.cha5e.com} etc.).
 
-Other works discuss the correctness of even allowing an http redirect to point to an https citing security gaps such as the ones used by the aforementioned tools.
+Other works discuss the correctness of even allowing an http redirect to point
+to an https citing security gaps such as the ones used by the aforementioned
+tools.
 
 \section{Adversary Model}
-This attack is demonstrated as a type of Man In The Middle attack.  An adversary can provide a public access point and allow anyone to connect to the internet via his connection.  Being the first hop in their connection all packets are available to sniff and alter as desired.  The adversary would use a filter to forward all normal traffic but would keep a listing of sites that it has doctored and replace all redirects to https versions of these sites with the doctored ones.  This would present the victim with a website that appears to be the normal https site they are used to but would actually only be a normal http site with the correct address that they initially typed (as opposed to a homograph-similar address).  Since many people are unaware of the difference between http and https the adversary would be able to acquire sensitive information from the victim such as usernames and passwords.
+This attack is demonstrated as a type of Man In The Middle attack.  An adversary can easily become a person in the middle by providing a public access point and allow anyone to connect to the internet via his connection.  Being the first hop in their connection, all packets are available to sniff and alter when desired.  The adversary would use a network packet filter to forward all normal traffic but would keep a listing of sites that it has doctored and replace all redirects to https versions of these sites with the doctored site.  This would present the victim with a website that appears to be the normal https site they are used to but would actually only be a normal http site with the correct address that they initially typed (as opposed to a homograph-similar address).  Many sites could easily be copied with enough fidelity to trick an unsuspecting user into thinking they were connected to the intended site.  Since many people are unaware of the difference between http and https the adversary would be able to acquire sensitive information from the victim such as usernames and passwords.
 
 %%%%%%%%%% Figure %%%%%%%%%%
 \begin{figure}[t]
@@ -90,14 +92,15 @@ This attack is demonstrated as a type of Man In The Middle attack.  An adversary
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Methodology}
-We were unable to implement any solution to this problem but thought of a few ways one would go about implementing one.
-One idea is to build a table into browsers that contains lists of sites that should always resolve using the https version instead of http.  This list could be maintained through browser updates and other methods but may end up causing too much upkeep overhead or become unsynchronized with the actual state of the internet.
+We were unable to implement any solution to this problem but thought of a 
+few ways one would go about implementing one.
+One idea is to build a table into browsers that contains lists of sites that should always resolve using the https version instead of http.  This list could be maintained through browser updates and other methods.  However, the Internet can change very rapidly.  A website trying to migrate from an http site to an https site would not appear in the table until the browser is updated.  Many browsers are not updated frequently\cite{ie6countdown}, so much of the internet would remain vulnerable.
 
-Any site that uses one time passwords can easily be protected against these types of attacks.  If a client is attempting to connect via an untrusted access point they can be issued a one time password via a secondary trusted authority that is registered to their account such as a cell phone.  This prevents the client from ever entering in their long term password and an adversary from acquiring any sensitive information.  While this does provide additional security it also makes authenticating harder on the user.  It also makes the assumption that such a secondary authority is available.
+Any site that uses one time passwords can easily be protected against these types of attacks.  If a client is attempting to connect via an untrusted access point they can be issued a one time password via a secondary trusted authority that is registered to their account such as a cell phone.  This prevents the client from ever entering in their long term password and an adversary from acquiring any sensitive information.  While this does provide additional security it also makes authenticating harder on the user.  It also makes the assumption that a secure secondary authority is available.
 
-Multiple stage authentication is an option that servers can provide to guard against these attacks as well.  To implement this the server would prompt the client for minimal information such as an account number or username.  The server can then issue challenges set by the client (such as personal questions) which allows the client to to authenticate the server.  Only once these stages are complete would the server prompt for sensitive information such as a password.
+Multiple stage authentication is an option that servers can provide to guard against these attacks as well.  To implement this the server would prompt the client for minimal information such as an account number or username.  The server can then issue challenges set by the client (such as personal questions) which allows the client to authenticate the server.  Only once these stages are complete would the server prompt for sensitive information such as a password.
 
-Some people purpose the idea that the redirect message should be exchanged for an error message that prompts the user to manually contact the server via the https address.  This may thwart many problems similar to the one in this paper but also creates a less user friendly method.
+Some people purpose the idea that the redirect message should be exchanged for an error message that prompts the user to manually contact the server via the https address.  This may thwart many problems similar to the one in this paper but also creates a less user friendly method because the process becomes less automated then it is today.
 
 Ideally there would be a way to make it the networks responsibility so it could be done without bothering either the client or the server.  In order for this to occur major changes to the current network would have to be made.  Implementing IPSec or transitioning to Content Centric Networking would actually solve all attacks of this nature.
 
